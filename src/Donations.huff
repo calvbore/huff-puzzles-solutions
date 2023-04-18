@@ -12,6 +12,7 @@
     calldataload            // [calldata]
     0xE0                    // [224, calldata]
     shr                     // [sig]
+    
     __FUNC_SIG(donated)     // [donated, sig]
     eq                      // [donated==sig]
     donated_spot            // [donated_spot, donated==sig]

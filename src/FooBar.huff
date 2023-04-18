@@ -21,14 +21,17 @@
     0xE0                // [224,calldata]
     shr                 // [sig]
     dup1                // [sig,sig]
+    
     __FUNC_SIG(foo)     // [foo,sig,sig]
     eq                  // [foo==sig,sig]
     foo_spot            // [foo_spot,foo==sig,sig]
     jumpi               // [sig]
+
     __FUNC_SIG(bar)     // [bar,sig]
     eq                  // [bar==sig]
     bar_spot            // [bar_spot,bar==sig]
     jumpi               // []
+
     0x20                // [32]
     0x00                // [0,32]
     revert              // []

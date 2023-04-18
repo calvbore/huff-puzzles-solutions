@@ -30,8 +30,8 @@
     make_spot:
         0x20                    // [32]
         init_spot               // [init_spot,32]
-        0x01
-        add
+        0x01                    // [1,init_spot,32]
+        add                     // [init_spot+1,32]
         0x00                    // [0,init_spot,32]
         codecopy                // []
         0x20                    // [size]

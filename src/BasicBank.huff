@@ -17,10 +17,12 @@
     0xE0                        // [224,calldata]
     shr                         // [sig]
     dup1                        // [sig,sig]
+
     __FUNC_SIG(balanceOf)       // [balanceOf,sig,sig]
     eq                          // [balanceOf==sig,sig]
     balanceOf_spot              // [balanceOf_spot,balanceOf==sig,sig]
     jumpi                       // [sig]
+    
     __FUNC_SIG(withdraw)        // [withdraw,sig]
     eq                          // [withdraw==sig]
     withdraw_spot               // [withdraw_spot,withdraw==sig]

@@ -20,9 +20,9 @@
     jumpi                   // []
 
     revert_spot:
-        0x00                    // [0]
-        0x00                    // [0, 0]
-        revert                  // []
+        0x00                // [0]
+        0x00                // [0, 0]
+        revert              // []
 
     moa_spot:               // []
         0x04                // [4]

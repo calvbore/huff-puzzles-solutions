@@ -13,10 +13,10 @@
     iszero              // [value==zero]
     continue            // [continue, value==zero]
     jumpi               // []
-    0x20
-    0x00
-    revert
+    0x00                // [0]
+    0x00                // [0,0]
+    revert              // []
 
-    continue:
-        stop
+    continue:           // []
+        stop            // []
 }
