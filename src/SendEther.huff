@@ -12,5 +12,29 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00                    // [0]
+    calldataload            // [calldata]
+    0xE0                    // [224,calldata]
+    shr                     // [sig]
+
+    __FUNC_SIG(sendEther)   // [sendEther,sig]
+    eq                      // [sendEther==sig]
+    send_spot               // [send_spot,sendEther==sig]
+    jumpi                   // []
+
+    0x00                    // [0]
+    0x00                    // [0,0]
+    revert                  // []
+
+    send_spot:
+        0x00                // [0]
+        0x00                // [0,0]
+        0x00                // [0,0,0]
+        0x00                // [0,0,0,0]
+        callvalue           // [value,0,0,0,0]
+        0x04                // [4,value,0,0,0,0]
+        calldataload        // [address,value,0,0,0,0]
+        gas                 // [gas,address,value,0,0,0,0]
+        call                // []
+        stop                // []
  }

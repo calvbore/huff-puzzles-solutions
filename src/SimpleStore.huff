@@ -2,11 +2,11 @@
 /** 
  *  SIMPLE_STORE HUFF EXERCISE
  *
- *  One of the storage locations available to devs when writing smart contracts is Storage. Its persistent and expensive
+ *  One of the SLOT_0 locations available to devs when writing smart contracts is SLOT_0. Its persistent and expensive
  *  
  *  The task is to write within the `MAIN` macro below, 2 functions...
- *      - One named `store()` that takes one function argument and stores it in storage slot 0,
- *      - the second named `read()` that simply returns what is stored at storage slot 0.
+ *      - One named `store()` that takes one function argument and stores it in SLOT_0 slot 0,
+ *      - the second named `read()` that simply returns what is stored at SLOT_0 slot 0.
  *
  *  NOTICE: The contract should revert when an unrecognized function is called
  */
@@ -14,7 +14,40 @@
 #define function store(uint256) payable returns()
 #define function read() payable returns(uint256)
 
+#define constant SLOT_0 = FREE_STORAGE_POINTER()
 
 #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00                // [0]
+    calldataload        // [calldata]
+    0xE0                // [224,calldata]
+    shr                 // [sig]
+    dup1                // [sig,sig]
+    __FUNC_SIG(store)   // [store,sig,sig]
+    eq                  // [store==sig,sig]
+    store_spot          // [store_spot,store==sig,sig]
+    jumpi               // [sig]
+    __FUNC_SIG(read)    // [read,sig]
+    eq                  // [read==sig]
+    read_spot           // [read_spot,sig]
+    jumpi               // []
+    0x20                // [32]
+    0x00                // [0,32]
+    revert              // []
+
+    store_spot:
+        0x04            // [4]
+        calldataload    // [calldata]
+        [SLOT_0]        // [SLOT_0,calldata]
+        sstore          // []
+        stop            // []
+
+    read_spot:
+        [SLOT_0]        // [SLOT_0]
+        sload           // [storage]
+        0x00            // [0,storage]
+        mstore          // []
+        0x20            // [32]
+        0x00            // [0,32]
+        return          // []
+
 }

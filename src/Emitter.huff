@@ -13,5 +13,33 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00                    // [0]
+    calldataload            // [calldata]
+    0xE0                    // [224,calldata]
+    shr                     // [sig]
+
+    __FUNC_SIG(value)       // [value,sig]
+    eq                      // [value==sig]
+    value_spot              // [value_spot,value==sig]
+    jumpi                   // []
+
+    0x00                    // [0]
+    0x00                    // [0,0]
+    revert                  // []
+
+    value_spot:
+        0x24                // [36]
+        calldataload        // [topic2]
+        0x00                // [0,topic2]
+        mstore              // []
+
+        0x04                // [4]
+        calldataload        // [topic1]
+
+        __EVENT_HASH(Value) // [value,topic1]
+        0x20                // [32,value,topic1]
+        0x00                // [0,32,value,topic1]
+        log2                // []
+        stop                // []
+        
  }

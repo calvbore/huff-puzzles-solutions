@@ -9,5 +9,16 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+    calldatasize        // [size]
+    dup1                // [size, size]
+    0x00                // [0, size, size]
+    0x00                // [0, 0, size, size]
+    calldatacopy        // [size]
+    0x00                // [0, size]
+    sha3                // [hash]
+    0x00                // [0, hash]
+    mstore              // []
+    0x20                // [32]
+    0x00                // [0, 32]
+    return              // []
  }

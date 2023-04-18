@@ -13,5 +13,42 @@
 
 
 #define macro MAIN() = takes(0) returns(0) {
+    0x00                // [0]
+    calldataload        // [calldata]
+    0xE0                // [224,calldata]
+    shr                 // [sig]
+    __FUNC_SIG(multiply)// [mul,sig]
+    eq                  // [mul==sig]
+    multiply            // [mul, mull==sig]
+    jumpi               // []
+
+    0x00                // [0]
+    0x00                // [0,0]
+    revert              // []
+
+    multiply:
+        0x04            // [4]
+        calldataload    // [arg0]
+        0x24            // [36, arg0]
+        calldataload    // [arg1, arg0]
+        dup2            // [arg0, arg1, arg0]
+        dup2            // [arg1, arg0, arg1, arg0]
+        mul             // [sum, arg1, arg0]
+        dup1            // [sum, sum, arg1, arg0]
+        0x00            // [0, sum, sum, arg1, arg0]
+        mstore          // [sum, arg1, arg0]
+        div             // [sum//arg1, arg0]
+        eq              // [sum//arg1==arg0]
+        iszero
+        underflow       // [underflow, !(sum//arg1)==arg0]
+        jumpi           // []
+        0x20            // [32]
+        0x00            // [0,32]
+        return          // []
+
+    underflow:
+        0x20            // [32]
+        0x00            // [0,32]
+        revert          // []
 
 }

@@ -13,5 +13,27 @@
 
 
 #define macro MAIN() = takes(0) returns(0) {
+    0x00             // [0]
+    calldataload     // [calldata]
+    0xE0             // [224, calldata]
+    shr              // [sig]
+    __FUNC_SIG(add1) // [add1, sig]
+    eq               // [add1==sig]
+    add1             // [add1,add1==sig]
+    jumpi            // []
 
+    0x00             // [0]
+    0x00             // [0,0]
+    revert           // []
+
+    add1:
+        0x04          // [4]
+        calldataload  // [num]
+        0x01          // [1,num]
+        add           // [1+num]
+        0x00          // [0,1+num]
+        mstore        // []
+        0x20          // [32]
+        0x00          // [0,32]
+        return        // []
 }

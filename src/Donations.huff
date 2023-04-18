@@ -8,5 +8,31 @@
 #define function donated(address) payable returns(uint256)
 
 #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00                    // [0]
+    calldataload            // [calldata]
+    0xE0                    // [224, calldata]
+    shr                     // [sig]
+    __FUNC_SIG(donated)     // [donated, sig]
+    eq                      // [donated==sig]
+    donated_spot            // [donated_spot, donated==sig]
+    jumpi                   // []
+
+    caller                  // [caller]
+    dup1                    // [caller, caller]
+    sload                   // [oldavalue, caller]
+    callvalue               // [newvalue, oldvalue, caller]
+    add                     // [totalvalue, caller]
+    swap1                   // [caller, totalvalue]
+    sstore                  // []
+    stop                    // []
+
+    donated_spot:
+        0x04                // [4]
+        calldataload        // [arg]
+        sload               // [totalvalue]
+        0x00                // [0, totalvalue]
+        mstore              // []
+        0x20                // [32]
+        0x00                // [0, 32]
+        return              // []
 }

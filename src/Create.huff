@@ -13,5 +13,51 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-    
- }
+    0x00                        // [0]
+    calldataload                // [calldata]
+    0xE0                        // [224,calldata]
+    shr                         // [sig]
+
+    __FUNC_SIG(makeContract)    // [makeContract,sig]
+    eq                          // [makeContract==sig]
+    make_spot                   // [make_spot,makeContract==sig]
+    jumpi                       // []
+
+    0x00                        // [0]
+    0x00                        // [0,0]
+    revert                      // []
+
+    make_spot:
+        0x20                    // [32]
+        init_spot               // [init_spot,32]
+        0x01
+        add
+        0x00                    // [0,init_spot,32]
+        codecopy                // []
+        0x20                    // [size]
+        0x00                    // [0,size]
+        0x00                    // [0,0,size]
+        create                  // [address]
+        0x00                    // [0,address]
+        mstore                  // []
+        0x20                    // [32]
+        0x00                    // [0,32]
+        return                  // []
+
+    init_spot:
+        0x0C                    // [12]
+        0x0D                    // [runtime_spot,12]
+        0x00                    // [0,runtime_spot,12]
+        codecopy                // []
+        0x0C                    // [12]
+        0x00                    // [0,12]
+        return                  // []
+
+    runtime_spot:               // []
+        0xcaffe                 // [0xcaffe]
+        0x00                    // [0,0xcaffe]
+        mstore                  // []
+        0x20                    // [32]
+        0x00                    // [0,32]
+        return                  // [] 
+}

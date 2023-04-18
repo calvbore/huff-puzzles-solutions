@@ -14,5 +14,54 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-   
+    0x00                        // [0]
+    calldataload                // [calldata]
+    0xE0                        // [224,calldata]
+    shr                         // [sig]
+
+    __FUNC_SIG(distribute)      // [dis,sig]
+    eq                          // [dis==sig]
+    dis_spot                    // [dis_spot,dis==sig]
+    jumpi                       // []
+
+    0x00                        // [0]
+    0x00                        // [0,0]
+    revert                      // []
+
+    dis_spot:
+        0x04                    // [4]
+        calldataload            // [arr_offset]
+        0x04                    // [4,arr_offset]
+        add                     // [arr_offset+4]
+        calldataload            // [length]
+
+        dup1                    // [length,length]
+        callvalue               // [value,length,length]
+        div                     // [value//length,length]
+        0x00                    // [i,value//length,length]
+        loop_spot               // [loop_spot,i,value//length,length]
+        jump                    // [i,value//length,length]
+
+        loop_spot:              // [i,value//length,length]
+            0x00                // [0,i,value//length,length]
+            0x00                // [0,0,i,value//length,length]
+            0x00                // [0,0,0,i,value//length,length]
+            0x00                // [0,0,0,0,i,value//length,length]
+            dup6                // [value//length,0,0,0,0,i,value//length,length]
+            dup6                // [i,value//length,0,0,0,0,i,value//length,length]
+            0x20                // [32,i,value//length,0,0,0,0,i,value//length,length]
+            mul                 // [i*32,value//length,0,0,0,0,i,value//length,length]
+            0x44                // [68,i*32,value//length,0,0,0,0,i,value//length,length]
+            add                 // [68+(i*32),value//length,0,0,0,0,i,value//length,length]
+            calldataload        // [address[i],value//length,0,0,0,0,i,value//length,length]
+            gas                 // [gas,address[i],value//length,0,0,0,0,i,value//length,length]
+            call                // [1,i,value//length,length]
+            add                 // [i+=1,value//length,length]
+            dup3                // [length,i,value//length,length]
+            dup2                // [i,length,i,value//length,length]
+            lt                  // [i<length,i,value//length,length]
+            loop_spot           // [loop_spot,i<length,i,value//length,length]
+            jumpi               // [i,value//length,length]
+
+        stop
  }

@@ -24,6 +24,170 @@
  #define error OutOfBounds()
  #define error ZeroArray()
 
+ #define constant ARRAY_L = FREE_STORAGE_POINTER()
+
  #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00                            // [0]
+    calldataload                    // [calldata]
+    0xE0                            // [224,calldata]
+    shr                             // [sig]
+    dup1                            // [sig,sig]
+    dup1                            // [sig,sig,sig]
+    dup1                            // [sig,sig,sig,sig]
+    dup1                            // [sig,sig,sig,sig,sig]
+
+    __FUNC_SIG(pushh)               // [pushh,sig]
+    eq                              // [pushh==sig]
+    pushh_spot                      // [pushh_spot,pushh==sig]
+    jumpi                           // []
+
+    __FUNC_SIG(popp)                // [popp,sig]
+    eq                              // [popp==sig]
+    popp_spot                       // [popp_spot,popp==sig]
+    jumpi                           // []
+
+    __FUNC_SIG(read)                // [read,sig]
+    eq                              // [read==sig]
+    read_spot                       // [read_spot,read==sig]
+    jumpi                           // []
+
+    __FUNC_SIG(length)              // [length,sig]
+    eq                              // [length==sig]
+    length_spot                     // [length_spot,length==sig]
+    jumpi                           // []
+
+    __FUNC_SIG(write)               // [write,sig]
+    eq                              // [write==sig]
+    write_spot                      // [write_spot,write==sig]
+    jumpi                           // []
+
+    0x00                            // [0]
+    0x00                            // [0,0]
+    revert                          // []
+
+    pushh_spot:
+        0x04                        // [4]
+        calldataload                // [num]
+        [ARRAY_L]                   // [ARRAY_L,num]
+        dup1                        // [ARRAY_L,ARRAY_L,num]
+        0x00                        // [0,ARRAY_L,ARRAY_L,num]
+        mstore                      // [ARRAY_L,num]
+        0x20                        // [32,ARRAY_L,num]
+        0x00                        // [0,32,ARRAY_L,num]
+        sha3                        // [hash,ARRAY_L,num]
+        swap1                       // [ARRAY_L,hash,num]
+        sload                       // [length,hash,num]
+        swap1                       // [hash,length,num]
+        dup2                        // [length,hash,length,num]
+        add                         // [hash+length,length,num]
+        swap1                       // [length,hash+length,num]
+        0x01                        // [1,length,hash+length,num]
+        add                         // [length+1,hash+length,num]
+        [ARRAY_L]                   // [ARRAY_L,length+1,hash+length,num]
+        sstore                      // [hash+length,num]
+        sstore                      // []
+        stop                        // []
+
+    popp_spot:
+        0x01                        // [1]
+        [ARRAY_L]                   // [ARRAY_L,1]
+        sload                       // [length,1]
+        dup1                        // [length,length,1]
+        iszero                      // [length==0,length,1]
+        ZeroArray_spot              // [ZeroArray_spot,length==0,length,1]
+        jumpi                       // [length,1]
+        sub                         // [lenght-1]
+
+        [ARRAY_L]                   // [ARRAY_L,lenght-1]
+        sstore                      // []
+        stop                        // []
+
+    read_spot:
+        0x04                        // [4]
+        calldataload                // [index]
+        dup1                        // [index,index]
+
+        [ARRAY_L]                   // [ARRAY_L,index,index]
+        sload                       // [length,index,index]
+
+        dup1                        // [length,length,index,index]
+        iszero                      // [length==0,length,index,index]
+        OutOfBounds_spot            // [OutOfBounds_spot,length==0,length,index,index]
+        jumpi                       // [length,index,index]
+
+        0x01                        // [1,length,index,index]
+        swap1                       // [length,1,index,index]
+        sub                         // [length-1,index,index]
+        swap1                       // [index,length-1,index]
+        gt                          // [index>(length-1),index]
+        OutOfBounds_spot            // [OutOfBounds_spot,index>(length-1),index]
+        jumpi                       // [index]
+
+        [ARRAY_L]                   // [ARRAY_L,index]
+        0x0                         // [0,ARRAY_L,index]
+        mstore                      // [index]
+        0x20                        // [32,index]
+        0x00                        // [0,32,index]
+        sha3                        // [hash,index]
+        add                         // [hash+index]
+        sload                       // [value]
+        0x00                        // [0,value]
+        mstore                      // []
+        0x20                        // [32]
+        0x00                        // [0,32]
+        return                      // []
+
+    length_spot:
+        [ARRAY_L]                   // [ARRAY_L]
+        sload                       // [length]
+        
+        0x00                        // [0,length]
+        mstore                      // []
+        0x20                        // [32]
+        0x00                        // [0,32]
+        return                      // []
+
+    write_spot:
+        0x24                        // [36]
+        calldataload                // [num]
+        0x04                        // [4,num]
+        calldataload                // [index,num]
+
+        [ARRAY_L]                   // [ARRAY_L,index,num]
+        sload                       // [length,index,num]
+        dup1                        // [length,length,index,num]
+        iszero                      // [length==0,length,index,num]
+        OutOfBounds_spot            // [ZeroArray_spot,length==zero,length,index,num]
+        jumpi                       // [length,index,num]
+
+        dup2                        // [index,length,index,num]
+        gt                          // [index>length,index,num]
+        OutOfBounds_spot            // [OutOfBounds_spot,index>length,index,num]
+        jumpi                       // [index,num]
+        
+        [ARRAY_L]                   // [ARRAY_L,index,num]
+        0x00                        // [0,ARRAY_L,index,num]
+        mstore                      // [index,num]
+        0x20                        // [32,index,num]
+        0x00                        // [0,32,index,num]
+        sha3                        // [hash,index,num]
+        add                         // [hash+index,num]
+        sstore                      // []
+        stop                        // []
+
+    OutOfBounds_spot:
+        __ERROR(OutOfBounds)        // [OutOfBounds]
+        0x00                        // [0,OutOfBounds]
+        mstore                      // []
+        0x04                        // [4]
+        0x00                        // [0,4]
+        revert                      // []
+
+    ZeroArray_spot:
+        __ERROR(ZeroArray)          // [ZeroArray]
+        0x00                        // [0,ZeroArray]
+        mstore                      // []
+        0x04                        // [4]
+        0x00                        // [0,4]
+        revert                      // []
  }
